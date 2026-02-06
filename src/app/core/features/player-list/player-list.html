@@ -1,0 +1,57 @@
+<div class="container">
+  <h1>🎯 Player Statistics</h1>
+
+  <div class="search-container">
+    <div class="filter-row">
+      <input 
+        type="text" 
+        class="search-input"
+        placeholder="Search players..."
+        [(ngModel)]="searchTerm"
+        (input)="filterPlayers()"
+      />
+
+      <select 
+        class="brand-select"
+        [(ngModel)]="selectedBrand" 
+        (change)="filterPlayers()">
+        <option value="">All Brands</option>
+        <option *ngFor="let brand of brands" [value]="brand">
+          {{ brand }}
+        </option>
+      </select>
+    </div>
+
+    <span class="count">{{ filteredPlayers.length }} players found</span>
+  </div>
+
+  <div class="table-responsive">
+    <table class="player-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Nickname</th>
+          <th>Age</th>
+          <th>Darts Used</th>
+          <th>Walk-on Song</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let player of filteredPlayers">
+          <td class="name-col">{{ player.fullName }}</td>
+          <td class="nickname-col">
+            <span *ngIf="player.nickname">"{{ player.nickname }}"</span>
+            <span *ngIf="!player.nickname">-</span>
+          </td>
+          <td>{{ player.age ?? 'N/A' }}</td>
+          <td>{{ player.dartsUsed }}</td>
+          <td class="song-col">🎵 {{ player.walkOnSong }}</td>
+        </tr>
+        
+        <tr *ngIf="filteredPlayers.length === 0">
+          <td colspan="5" class="no-data">No players found matching your search.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
