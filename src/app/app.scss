@@ -1,0 +1,12 @@
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f4f7fa;
+}
+
+.content-area {
+  margin-left: 250px;
+  flex: 1;
+  padding: 2rem;
+  width: calc(100% - 250px);
+}
