@@ -1,0 +1,31 @@
+<div class="logo-area">
+  <h2>AllSports</h2>
+</div>
+
+<nav>
+  <ul>
+    <li *ngFor="let item of menuItems">
+      
+      <div *ngIf="item.children" class="menu-header" (click)="toggleSection(item)">
+        <span class="icon">{{ item.icon }}</span>
+        <span class="label">{{ item.label }}</span>
+        <span class="arrow">{{ item.isOpen ? '▼' : '▶' }}</span>
+      </div>
+
+      <a *ngIf="!item.children" [routerLink]="item.route" routerLinkActive="active-link">
+        <span class="icon">{{ item.icon }}</span>
+        <span class="label">{{ item.label }}</span>
+      </a>
+
+      <ul class="submenu" *ngIf="item.children && item.isOpen">
+        <li *ngFor="let child of item.children">
+          <a [routerLink]="child.route" routerLinkActive="active-link">
+            <span class="icon">{{ child.icon }}</span>
+            <span class="label">{{ child.label }}</span>
+          </a>
+        </li>
+      </ul>
+
+    </li>
+  </ul>
+</nav>
