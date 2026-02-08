@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { PlayerProfile } from '../models/player-profile.model';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../environments/environment.production';
 
 @Injectable({ providedIn: 'root' })
 export class DartsService {
