@@ -1,3 +1,7 @@
+@import "../../../../styles/mixins";
+
+$mobile-breakpoint: 768px;
+
 .container {
   padding: 2rem;
   max-width: 1200px;
@@ -11,7 +15,6 @@
   }
 }
 
-/* --- Search Styles (Unchanged) --- */
 .search-container {
   max-width: 600px;
   margin: 0 auto 2rem auto;
@@ -21,6 +24,11 @@
     display: flex;
     gap: 10px;
     margin-bottom: 0.5rem;
+
+    @media (max-width: $mobile-breakpoint) {
+      flex-direction: column;
+      gap: 15px;
+    }
   }
 
   .search-input {
@@ -40,6 +48,7 @@
   .brand-select {
     flex: 1;
     padding: 0 15px;
+    height: 46px; 
     font-size: 1rem;
     border: 2px solid #ddd;
     border-radius: 25px;
@@ -56,12 +65,22 @@
     display: block;
     color: #888;
     font-size: 0.9rem;
+    margin-top: 5px;
   }
 }
 
-/* --- NEW: Table Styles --- */
+.mobile-view { display: none; }
+.desktop-view { display: block; }
+
+@media (max-width: $mobile-breakpoint) {
+  .desktop-view { display: none; }
+  .mobile-view { display: grid; gap: 15px; }
+  
+  .container { padding: 1rem; } 
+}
+
 .table-responsive {
-  overflow-x: auto; /* Allows horizontal scroll on mobile */
+  overflow-x: auto; 
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
@@ -70,7 +89,7 @@
   width: 100%;
   border-collapse: collapse;
   background-color: white;
-  min-width: 800px; /* Ensures table doesn't squish too much */
+  min-width: 800px;
 
   thead {
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
@@ -91,14 +110,8 @@
       border-bottom: 1px solid #eee;
       transition: background-color 0.2s;
 
-      &:hover {
-        background-color: #f8fbff;
-      }
-
-      /* Zebra Striping */
-      &:nth-child(even) {
-        background-color: #fcfcfc;
-      }
+      &:hover { background-color: #f8fbff; }
+      &:nth-child(even) { background-color: #fcfcfc; }
     }
 
     td {
@@ -107,7 +120,6 @@
       vertical-align: middle;
     }
 
-    /* Specific Column Styling */
     .name-col {
       font-weight: bold;
       color: #1e3c72;
@@ -116,7 +128,7 @@
 
     .nickname-col {
       font-style: italic;
-      color: #d4a017; /* Gold-ish darker color for readability on white */
+      color: #d4a017;
       font-weight: 600;
     }
 
@@ -124,12 +136,86 @@
       font-size: 0.9rem;
       color: #666;
     }
+  }
+}
 
-    .no-data {
-      text-align: center;
-      padding: 3rem;
-      color: #888;
-      font-style: italic;
+.player-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-left: 6px solid #1e3c72;
+  position: relative;
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+
+    .name {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .age {
+      background: #eee;
+      color: #555;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
     }
   }
+
+  .nickname {
+    color: #d4a017;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .card-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 10px;
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      .label {
+        color: #888;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      
+      .value {
+        font-weight: 500;
+        color: #444;
+        text-align: right;
+      }
+      
+      .song {
+        color: #1e3c72;
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+.no-data {
+  text-align: center;
+  padding: 3rem;
+  color: #888;
+  font-style: italic;
+  width: 100%;
+  display: block;
 }
