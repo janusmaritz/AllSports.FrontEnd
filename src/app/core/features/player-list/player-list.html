@@ -21,11 +21,11 @@
         </option>
       </select>
     </div>
-
+    
     <span class="count">{{ filteredPlayers.length }} players found</span>
   </div>
 
-  <div class="table-responsive">
+  <div class="desktop-view table-responsive">
     <table class="player-table">
       <thead>
         <tr>
@@ -47,11 +47,34 @@
           <td>{{ player.dartsUsed }}</td>
           <td class="song-col">🎵 {{ player.walkOnSong }}</td>
         </tr>
-        
-        <tr *ngIf="filteredPlayers.length === 0">
-          <td colspan="5" class="no-data">No players found matching your search.</td>
-        </tr>
       </tbody>
     </table>
   </div>
+
+  <div class="mobile-view">
+    <div class="player-card" *ngFor="let player of filteredPlayers">
+      <div class="card-header">
+        <span class="name">{{ player.fullName }}</span>
+        <span class="age" *ngIf="player.age">{{ player.age }}y</span>
+      </div>
+      
+      <div class="nickname" *ngIf="player.nickname">"{{ player.nickname }}"</div>
+
+      <div class="card-details">
+        <div class="detail-row">
+          <span class="label">Darts:</span> 
+          <span class="value">{{ player.dartsUsed }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Song:</span> 
+          <span class="value song">🎵 {{ player.walkOnSong }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="no-data" *ngIf="filteredPlayers.length === 0">
+    No players found matching your search.
+  </div>
+
 </div>
