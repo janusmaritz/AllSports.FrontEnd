@@ -19,12 +19,12 @@
 
       <select
         class="brand-select"
-        [ngModel]="selectedMovement()"
-        (ngModelChange)="selectedMovement.set($event)"
+        [ngModel]="selectedSourceUrl()"
+        (ngModelChange)="selectedSourceUrl.set($event)"
       >
-        <option value="">All Movement</option>
-        <option *ngFor="let movement of movements" [value]="movement">
-          {{ movement }}
+        <option value="">All Sources</option>
+        <option *ngFor="let sourceUrl of sourceUrls()" [value]="sourceUrl">
+          {{ sourceUrl }}
         </option>
       </select>
     </div>
@@ -38,18 +38,20 @@
         <tr>
           <th>Rank</th>
           <th>Player</th>
-          <th>Country</th>
-          <th>Points</th>
-          <th>Movement</th>
+          <th>Prize Money</th>
+          <th>Updated</th>
+          <th>Source</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let ranking of filteredRankings()">
-          <td class="name-col">#{{ ranking.position }}</td>
-          <td>{{ ranking.player }}</td>
-          <td>{{ ranking.country }}</td>
-          <td>{{ ranking.points }}</td>
-          <td class="highlight-col">{{ ranking.movement }}</td>
+          <td class="name-col">#{{ ranking.rank }}</td>
+          <td>{{ ranking.playerName }}</td>
+          <td>{{ ranking.moneyAmount | currency:'GBP':'symbol':'1.0-0' }}</td>
+          <td>{{ ranking.scrapedAtUtc | date:'mediumDate' }}</td>
+          <td class="highlight-col">
+            <a [href]="ranking.sourceUrl" target="_blank" rel="noopener noreferrer">Source</a>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -58,24 +60,34 @@
   <div class="mobile-view">
     <div class="data-card" *ngFor="let ranking of filteredRankings()">
       <div class="card-header">
-        <span class="name">#{{ ranking.position }} {{ ranking.player }}</span>
-        <span class="badge">{{ ranking.movement }}</span>
+        <span class="name">#{{ ranking.rank }} {{ ranking.playerName }}</span>
+        <span class="badge">{{ ranking.moneyAmount | currency:'GBP':'symbol':'1.0-0' }}</span>
       </div>
 
       <div class="card-details">
         <div class="detail-row">
-          <span class="label">Country:</span>
-          <span class="value">{{ ranking.country }}</span>
+          <span class="label">Updated:</span>
+          <span class="value">{{ ranking.scrapedAtUtc | date:'mediumDate' }}</span>
         </div>
         <div class="detail-row">
-          <span class="label">Points:</span>
-          <span class="value">{{ ranking.points }}</span>
+          <span class="label">Source:</span>
+          <span class="value">
+            <a [href]="ranking.sourceUrl" target="_blank" rel="noopener noreferrer">Open</a>
+          </span>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="no-data" *ngIf="filteredRankings().length === 0">
+  <div class="no-data" *ngIf="isLoading()">
+    Loading rankings...
+  </div>
+
+  <div class="no-data" *ngIf="!isLoading() && hasLoadError()">
+    Unable to load rankings.
+  </div>
+
+  <div class="no-data" *ngIf="!isLoading() && !hasLoadError() && filteredRankings().length === 0">
     No rankings found matching your search.
   </div>
 </div>
