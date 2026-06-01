@@ -1,0 +1,85 @@
+<div class="container">
+  <h1>
+    <lucide-icon [img]="trophyIcon" [size]="24" class="title-icon"></lucide-icon>
+    <span>Tournaments</span>
+  </h1>
+
+  <div class="search-container">
+    <div class="filter-row">
+      <div class="search-input-wrap">
+        <lucide-icon [img]="searchIcon" [size]="18" class="search-icon"></lucide-icon>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search tournaments..."
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+        />
+      </div>
+
+      <select
+        class="brand-select"
+        [ngModel]="selectedStatus()"
+        (ngModelChange)="selectedStatus.set($event)"
+      >
+        <option value="">All Statuses</option>
+        <option *ngFor="let status of statuses" [value]="status">
+          {{ status }}
+        </option>
+      </select>
+    </div>
+
+    <span class="count">{{ filteredTournaments().length }} tournaments found</span>
+  </div>
+
+  <div class="desktop-view table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Location</th>
+          <th>Format</th>
+          <th>Status</th>
+          <th>Champion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let tournament of filteredTournaments()">
+          <td class="name-col">{{ tournament.name }}</td>
+          <td>{{ tournament.location }}</td>
+          <td>{{ tournament.format }}</td>
+          <td class="highlight-col">{{ tournament.status }}</td>
+          <td>{{ tournament.champion }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mobile-view">
+    <div class="data-card" *ngFor="let tournament of filteredTournaments()">
+      <div class="card-header">
+        <span class="name">{{ tournament.name }}</span>
+        <span class="badge">{{ tournament.status }}</span>
+      </div>
+
+      <div class="card-details">
+        <div class="detail-row">
+          <span class="label">Location:</span>
+          <span class="value">{{ tournament.location }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Format:</span>
+          <span class="value">{{ tournament.format }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Champion:</span>
+          <span class="value">{{ tournament.champion }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="no-data" *ngIf="filteredTournaments().length === 0">
+    No tournaments found matching your search.
+  </div>
+</div>

@@ -1,0 +1,81 @@
+<div class="container">
+  <h1>
+    <lucide-icon [img]="chartColumnIcon" [size]="24" class="title-icon"></lucide-icon>
+    <span>Rankings</span>
+  </h1>
+
+  <div class="search-container">
+    <div class="filter-row">
+      <div class="search-input-wrap">
+        <lucide-icon [img]="searchIcon" [size]="18" class="search-icon"></lucide-icon>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search rankings..."
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+        />
+      </div>
+
+      <select
+        class="brand-select"
+        [ngModel]="selectedMovement()"
+        (ngModelChange)="selectedMovement.set($event)"
+      >
+        <option value="">All Movement</option>
+        <option *ngFor="let movement of movements" [value]="movement">
+          {{ movement }}
+        </option>
+      </select>
+    </div>
+
+    <span class="count">{{ filteredRankings().length }} rankings found</span>
+  </div>
+
+  <div class="desktop-view table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Player</th>
+          <th>Country</th>
+          <th>Points</th>
+          <th>Movement</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ranking of filteredRankings()">
+          <td class="name-col">#{{ ranking.position }}</td>
+          <td>{{ ranking.player }}</td>
+          <td>{{ ranking.country }}</td>
+          <td>{{ ranking.points }}</td>
+          <td class="highlight-col">{{ ranking.movement }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mobile-view">
+    <div class="data-card" *ngFor="let ranking of filteredRankings()">
+      <div class="card-header">
+        <span class="name">#{{ ranking.position }} {{ ranking.player }}</span>
+        <span class="badge">{{ ranking.movement }}</span>
+      </div>
+
+      <div class="card-details">
+        <div class="detail-row">
+          <span class="label">Country:</span>
+          <span class="value">{{ ranking.country }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Points:</span>
+          <span class="value">{{ ranking.points }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="no-data" *ngIf="filteredRankings().length === 0">
+    No rankings found matching your search.
+  </div>
+</div>
