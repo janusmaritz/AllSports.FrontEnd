@@ -36,15 +36,18 @@ body {
   --color-border: #c5d3d6;
   --color-border-light: #dde7e9;
   --color-shadow-soft: rgba(2, 8, 23, 0.12);
+  --color-sidebar-bg: linear-gradient(180deg, #ffffff 0%, #eef7f6 100%);
+  --color-sidebar-text: #102a2a;
+  --color-sidebar-text-muted: #587172;
   --color-sidebar-shadow: rgba(2, 8, 23, 0.32);
-  --color-sidebar-border: rgba(255, 255, 255, 0.14);
-  --color-sidebar-item-hover: rgba(255, 255, 255, 0.12);
-  --color-sidebar-item-active: rgba(255, 255, 255, 0.24);
-  --color-sidebar-submenu-bg: rgba(6, 15, 27, 0.5);
-  --color-sidebar-submenu-active: rgba(255, 255, 255, 0.09);
-  --color-surface-elevated: rgba(255, 255, 255, 0.12);
-  --color-surface-elevated-border: rgba(255, 255, 255, 0.2);
-  --color-surface-elevated-hover: rgba(255, 255, 255, 0.2);
+  --color-sidebar-border: rgba(15, 118, 110, 0.16);
+  --color-sidebar-item-hover: rgba(15, 118, 110, 0.1);
+  --color-sidebar-item-active: rgba(15, 118, 110, 0.16);
+  --color-sidebar-submenu-bg: rgba(15, 118, 110, 0.07);
+  --color-sidebar-submenu-active: rgba(15, 118, 110, 0.14);
+  --color-surface-elevated: rgba(15, 118, 110, 0.08);
+  --color-surface-elevated-border: rgba(15, 118, 110, 0.2);
+  --color-surface-elevated-hover: rgba(15, 118, 110, 0.14);
   --color-on-primary: #ffffff;
   --sidebar-width: 250px;
 }
@@ -66,6 +69,9 @@ body {
   --color-border: #2a3a4e;
   --color-border-light: #1f2f43;
   --color-shadow-soft: rgba(0, 0, 0, 0.35);
+  --color-sidebar-bg: var(--color-primary-gradient);
+  --color-sidebar-text: #f8fafc;
+  --color-sidebar-text-muted: rgba(248, 250, 252, 0.68);
   --color-sidebar-shadow: rgba(0, 0, 0, 0.45);
   --color-sidebar-border: rgba(255, 255, 255, 0.08);
   --color-sidebar-item-hover: rgba(255, 255, 255, 0.08);
