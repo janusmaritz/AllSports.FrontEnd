@@ -1,3 +1,5 @@
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
 <div class="logo-area">
   <h2>AllSports</h2>
 </div>
@@ -5,27 +7,38 @@
 <nav>
   <ul>
     <li *ngFor="let item of menuItems">
-      
       <div *ngIf="item.children" class="menu-header" (click)="toggleSection(item)">
-        <span class="icon">{{ item.icon }}</span>
+        <lucide-icon [img]="item.icon" [size]="18" class="icon"></lucide-icon>
         <span class="label">{{ item.label }}</span>
-        <span class="arrow">{{ item.isOpen ? '▼' : '▶' }}</span>
+        <lucide-icon [img]="item.isOpen ? chevronDownIcon : chevronRightIcon" [size]="16" class="arrow"></lucide-icon>
       </div>
 
       <a *ngIf="!item.children" [routerLink]="item.route" routerLinkActive="active-link">
-        <span class="icon">{{ item.icon }}</span>
+        <lucide-icon [img]="item.icon" [size]="18" class="icon"></lucide-icon>
         <span class="label">{{ item.label }}</span>
       </a>
 
       <ul class="submenu" *ngIf="item.children && item.isOpen">
         <li *ngFor="let child of item.children">
           <a [routerLink]="child.route" routerLinkActive="active-link">
-            <span class="icon">{{ child.icon }}</span>
+            <lucide-icon [img]="child.icon" [size]="16" class="icon"></lucide-icon>
             <span class="label">{{ child.label }}</span>
           </a>
         </li>
       </ul>
-
     </li>
   </ul>
 </nav>
+
+<div class="theme-toggle-wrap">
+  <button
+    type="button"
+    class="theme-toggle"
+    (click)="toggleTheme()"
+    [attr.aria-label]="'Switch to ' + (isDarkMode ? 'light' : 'dark') + ' mode'"
+    [attr.aria-pressed]="isDarkMode"
+  >
+    <lucide-icon [img]="isDarkMode ? sunMediumIcon : moonStarIcon" [size]="18" class="toggle-icon"></lucide-icon>
+    <span class="toggle-label">{{ themeLabel }}</span>
+  </button>
+</div>

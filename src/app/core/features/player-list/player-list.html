@@ -1,28 +1,35 @@
 <div class="container">
-  <h1>🎯 Player Statistics</h1>
+  <h1>
+    <lucide-icon [img]="targetIcon" [size]="24" class="title-icon"></lucide-icon>
+    <span>Player Statistics</span>
+  </h1>
 
   <div class="search-container">
     <div class="filter-row">
-      <input 
-        type="text" 
-        class="search-input"
-        placeholder="Search players..."
-        [(ngModel)]="searchTerm"
-        (input)="filterPlayers()"
-      />
+      <div class="search-input-wrap">
+        <lucide-icon [img]="searchIcon" [size]="18" class="search-icon"></lucide-icon>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search players..."
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+        />
+      </div>
 
-      <select 
+      <select
         class="brand-select"
-        [(ngModel)]="selectedBrand" 
-        (change)="filterPlayers()">
+        [ngModel]="selectedBrand()"
+        (ngModelChange)="selectedBrand.set($event)"
+      >
         <option value="">All Brands</option>
         <option *ngFor="let brand of brands" [value]="brand">
           {{ brand }}
         </option>
       </select>
     </div>
-    
-    <span class="count">{{ filteredPlayers.length }} players found</span>
+
+    <span class="count">{{ filteredPlayers().length }} players found</span>
   </div>
 
   <div class="desktop-view table-responsive">
@@ -37,7 +44,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let player of filteredPlayers">
+        <tr *ngFor="let player of filteredPlayers()">
           <td class="name-col">{{ player.fullName }}</td>
           <td class="nickname-col">
             <span *ngIf="player.nickname">"{{ player.nickname }}"</span>
@@ -45,36 +52,41 @@
           </td>
           <td>{{ player.age ?? 'N/A' }}</td>
           <td>{{ player.dartsUsed }}</td>
-          <td class="song-col">🎵 {{ player.walkOnSong }}</td>
+          <td class="song-col">
+            <lucide-icon [img]="music2Icon" [size]="16" class="song-icon"></lucide-icon>
+            <span>{{ player.walkOnSong }}</span>
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <div class="mobile-view">
-    <div class="player-card" *ngFor="let player of filteredPlayers">
+    <div class="player-card" *ngFor="let player of filteredPlayers()">
       <div class="card-header">
         <span class="name">{{ player.fullName }}</span>
         <span class="age" *ngIf="player.age">{{ player.age }}y</span>
       </div>
-      
+
       <div class="nickname" *ngIf="player.nickname">"{{ player.nickname }}"</div>
 
       <div class="card-details">
         <div class="detail-row">
-          <span class="label">Darts:</span> 
+          <span class="label">Darts:</span>
           <span class="value">{{ player.dartsUsed }}</span>
         </div>
         <div class="detail-row">
-          <span class="label">Song:</span> 
-          <span class="value song">🎵 {{ player.walkOnSong }}</span>
+          <span class="label">Song:</span>
+          <span class="value song">
+            <lucide-icon [img]="music2Icon" [size]="14" class="song-icon"></lucide-icon>
+            <span>{{ player.walkOnSong }}</span>
+          </span>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="no-data" *ngIf="filteredPlayers.length === 0">
+  <div class="no-data" *ngIf="filteredPlayers().length === 0">
     No players found matching your search.
   </div>
-
 </div>

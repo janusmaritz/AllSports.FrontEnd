@@ -1,12 +1,21 @@
+@use "../styles/mixins";
+
 .app-layout {
   display: flex;
   min-height: 100vh;
-  background-color: #f4f7fa;
+  background-color: var(--color-bg-primary);
 }
 
 .content-area {
-  margin-left: 250px;
+  margin-left: var(--sidebar-width);
   flex: 1;
   padding: 2rem;
-  width: calc(100% - 250px);
+  width: calc(100% - var(--sidebar-width));
+}
+
+@include mixins.max-width(mixins.$tablet) {
+  .content-area {
+    margin-left: 0;
+    width: 100%;
+  }
 }

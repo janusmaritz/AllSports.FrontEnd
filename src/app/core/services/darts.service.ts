@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { PlayerProfile } from '../models/player-profile.model';
 import { environment } from '../../../environments/environment';
+import { DartsRanking } from '../models/darts-ranking.model';
 
 @Injectable({ providedIn: 'root' })
 export class DartsService {
@@ -10,5 +11,9 @@ export class DartsService {
 
   getPlayers() {
     return this.http.get<PlayerProfile[]>(`${this.apiUrl}/players`);
+  }
+
+  getRankings() {
+    return this.http.get<DartsRanking[]>(`${this.apiUrl}/rankings`);
   }
 }

@@ -1,0 +1,93 @@
+<div class="container">
+  <h1>
+    <lucide-icon [img]="chartColumnIcon" [size]="24" class="title-icon"></lucide-icon>
+    <span>Rankings</span>
+  </h1>
+
+  <div class="search-container">
+    <div class="filter-row">
+      <div class="search-input-wrap">
+        <lucide-icon [img]="searchIcon" [size]="18" class="search-icon"></lucide-icon>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search rankings..."
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+        />
+      </div>
+
+      <select
+        class="brand-select"
+        [ngModel]="selectedSourceUrl()"
+        (ngModelChange)="selectedSourceUrl.set($event)"
+      >
+        <option value="">All Sources</option>
+        <option *ngFor="let sourceUrl of sourceUrls()" [value]="sourceUrl">
+          {{ sourceUrl }}
+        </option>
+      </select>
+    </div>
+
+    <span class="count">{{ filteredRankings().length }} rankings found</span>
+  </div>
+
+  <div class="desktop-view table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Player</th>
+          <th>Prize Money</th>
+          <th>Updated</th>
+          <th>Source</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ranking of filteredRankings()">
+          <td class="name-col">#{{ ranking.rank }}</td>
+          <td>{{ ranking.playerName }}</td>
+          <td>{{ ranking.moneyAmount | currency:'GBP':'symbol':'1.0-0' }}</td>
+          <td>{{ ranking.scrapedAtUtc | date:'mediumDate' }}</td>
+          <td class="highlight-col">
+            <a [href]="ranking.sourceUrl" target="_blank" rel="noopener noreferrer">Source</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mobile-view">
+    <div class="data-card" *ngFor="let ranking of filteredRankings()">
+      <div class="card-header">
+        <span class="name">#{{ ranking.rank }} {{ ranking.playerName }}</span>
+        <span class="badge">{{ ranking.moneyAmount | currency:'GBP':'symbol':'1.0-0' }}</span>
+      </div>
+
+      <div class="card-details">
+        <div class="detail-row">
+          <span class="label">Updated:</span>
+          <span class="value">{{ ranking.scrapedAtUtc | date:'mediumDate' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Source:</span>
+          <span class="value">
+            <a [href]="ranking.sourceUrl" target="_blank" rel="noopener noreferrer">Open</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="no-data" *ngIf="isLoading()">
+    Loading rankings...
+  </div>
+
+  <div class="no-data" *ngIf="!isLoading() && hasLoadError()">
+    Unable to load rankings.
+  </div>
+
+  <div class="no-data" *ngIf="!isLoading() && !hasLoadError() && filteredRankings().length === 0">
+    No rankings found matching your search.
+  </div>
+</div>
