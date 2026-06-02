@@ -1,5 +1,3 @@
-<a href="#main-content" class="skip-link">Skip to main content</a>
-
 <div class="logo-area">
   <h2>AllSports</h2>
 </div>
@@ -13,14 +11,14 @@
         <lucide-icon [img]="item.isOpen ? chevronDownIcon : chevronRightIcon" [size]="16" class="arrow"></lucide-icon>
       </div>
 
-      <a *ngIf="!item.children" [routerLink]="item.route" routerLinkActive="active-link">
+      <a *ngIf="!item.children" [routerLink]="item.route" routerLinkActive="active-link" (click)="onNavLinkClick()">
         <lucide-icon [img]="item.icon" [size]="18" class="icon"></lucide-icon>
         <span class="label">{{ item.label }}</span>
       </a>
 
       <ul class="submenu" *ngIf="item.children && item.isOpen">
         <li *ngFor="let child of item.children">
-          <a [routerLink]="child.route" routerLinkActive="active-link">
+          <a [routerLink]="child.route" routerLinkActive="active-link" (click)="onNavLinkClick()">
             <lucide-icon [img]="child.icon" [size]="16" class="icon"></lucide-icon>
             <span class="label">{{ child.label }}</span>
           </a>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, HostBinding } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import {
@@ -28,6 +28,9 @@ import { MenuItem } from '../../models/menu-item.model';
   styleUrls: ['./sidebar.scss']
 })
 export class SidebarComponent implements OnInit {
+  @HostBinding('class.is-open') @Input() isOpen = false;
+  @Output() closeRequested = new EventEmitter<void>();
+
   private readonly themeStorageKey = 'allSportsTheme';
   isDarkMode = false;
   readonly chevronDownIcon = ChevronDownIcon;
@@ -57,6 +60,10 @@ export class SidebarComponent implements OnInit {
     if (item.children) {
       item.isOpen = !item.isOpen;
     }
+  }
+
+  onNavLinkClick(): void {
+    this.closeRequested.emit();
   }
 
   ngOnInit(): void {
