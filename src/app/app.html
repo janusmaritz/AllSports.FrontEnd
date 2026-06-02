@@ -1,11 +1,29 @@
 <a href="#main-content" class="skip-link">Skip to content</a>
 
+<header class="mobile-header">
+  <button
+    type="button"
+    class="hamburger-btn"
+    (click)="toggleSidebar()"
+    [attr.aria-expanded]="isSidebarOpen()"
+    aria-label="Toggle navigation"
+  >
+    <lucide-icon [img]="menuIcon" [size]="22"></lucide-icon>
+  </button>
+  <span class="mobile-title">AllSports</span>
+</header>
+
 <div class="app-layout">
-  
-  <app-sidebar></app-sidebar>
+  <div
+    class="sidebar-overlay"
+    [class.active]="isSidebarOpen()"
+    (click)="closeSidebar()"
+    aria-hidden="true"
+  ></div>
+
+  <app-sidebar [isOpen]="isSidebarOpen()" (closeRequested)="closeSidebar()"></app-sidebar>
 
   <main id="main-content" class="content-area">
     <router-outlet></router-outlet>
   </main>
-
 </div>
