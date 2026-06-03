@@ -5,88 +5,181 @@
   </h1>
 
   <div class="search-container">
+
+    <!-- Primary row: search + filter toggle + page size -->
     <div class="filter-row">
       <div class="search-input-wrap">
         <lucide-icon [img]="searchIcon" [size]="18" class="search-icon"></lucide-icon>
         <input
           type="text"
           class="search-input"
-          placeholder="Search players..."
+          placeholder="Search name, nickname, darts, song…"
           [ngModel]="searchTerm()"
-          (ngModelChange)="searchTerm.set($event)"
+          (ngModelChange)="onSearch($event)"
         />
       </div>
 
-      <select
-        class="brand-select"
-        [ngModel]="selectedBrand()"
-        (ngModelChange)="selectedBrand.set($event)"
+      <button
+        class="filter-toggle-btn"
+        [class.filter-toggle-btn--active]="showFilters() || activeFilterCount() > 0"
+        (click)="toggleFilters()"
       >
-        <option value="">All Brands</option>
-        <option *ngFor="let brand of brands" [value]="brand">
-          {{ brand }}
-        </option>
+        <lucide-icon [img]="filterIcon" [size]="15"></lucide-icon>
+        Filters
+        @if (activeFilterCount() > 0) {
+          <span class="filter-badge">{{ activeFilterCount() }}</span>
+        }
+      </button>
+
+      <select
+        class="page-size-select"
+        [ngModel]="pageSize()"
+        (ngModelChange)="onPageSizeChange(+$event)"
+      >
+        <option [value]="10">10 / page</option>
+        <option [value]="20">20 / page</option>
+        <option [value]="50">50 / page</option>
       </select>
     </div>
 
-    <span class="count">{{ filteredPlayers().length }} players found</span>
+    <!-- Collapsible filter panel -->
+    @if (showFilters()) {
+      <div class="filter-panel">
+        <div class="filter-panel-row">
+          <div class="filter-group">
+            <label class="filter-label">Brand</label>
+            <select
+              class="filter-select"
+              [ngModel]="dartBrand()"
+              (ngModelChange)="setDartBrand($event)"
+            >
+              <option value="">All Brands</option>
+              @for (brand of brands; track brand) {
+                <option [value]="brand">{{ brand }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Weight</label>
+            <select
+              class="filter-select"
+              [ngModel]="dartWeight()"
+              (ngModelChange)="setDartWeight($event)"
+            >
+              <option value="">All Weights</option>
+              @for (weight of weights; track weight) {
+                <option [value]="weight">{{ weight }}</option>
+              }
+            </select>
+          </div>
+
+          @if (activeFilterCount() > 0) {
+            <button class="clear-filters-btn" (click)="clearFilters()">
+              <lucide-icon [img]="clearIcon" [size]="13"></lucide-icon>
+              Clear
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    <span class="count">
+      {{ result().totalCount }} players
+      @if (isLoading()) {<span> — loading…</span>}
+    </span>
   </div>
 
+  <!-- Desktop table -->
   <div class="desktop-view table-responsive">
     <table class="player-table">
       <thead>
         <tr>
-          <th>Name</th>
+          <th class="sortable" (click)="sort('fullName')">
+            Name
+            <span class="sort-arrow">{{ sortBy() === 'fullName' ? (sortDescending() ? '▼' : '▲') : '' }}</span>
+          </th>
           <th>Nickname</th>
-          <th>Age</th>
+          <th class="sortable" (click)="sort('age')">
+            Age
+            <span class="sort-arrow">{{ sortBy() === 'age' ? (sortDescending() ? '▼' : '▲') : '' }}</span>
+          </th>
           <th>Darts Used</th>
           <th>Walk-on Song</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let player of filteredPlayers()">
-          <td class="name-col">{{ player.fullName }}</td>
-          <td class="nickname-col">
-            <span *ngIf="player.nickname">"{{ player.nickname }}"</span>
-            <span *ngIf="!player.nickname">-</span>
-          </td>
-          <td>{{ player.age ?? 'N/A' }}</td>
-          <td>{{ player.dartsUsed }}</td>
-          <td class="song-col">
-            <lucide-icon [img]="music2Icon" [size]="16" class="song-icon"></lucide-icon>
-            <span>{{ player.walkOnSong }}</span>
-          </td>
-        </tr>
+        @for (player of result().items; track player.id) {
+          <tr>
+            <td class="name-col">{{ player.fullName }}</td>
+            <td class="nickname-col">
+              @if (player.nickname) {
+                <span>"{{ player.nickname }}"</span>
+              } @else {
+                <span>-</span>
+              }
+            </td>
+            <td>{{ player.age ?? 'N/A' }}</td>
+            <td>{{ player.dartsUsed }}</td>
+            <td class="song-col">
+              <lucide-icon [img]="music2Icon" [size]="16" class="song-icon"></lucide-icon>
+              <span>{{ player.walkOnSong }}</span>
+            </td>
+          </tr>
+        }
       </tbody>
     </table>
   </div>
 
+  <!-- Mobile cards -->
   <div class="mobile-view">
-    <div class="player-card" *ngFor="let player of filteredPlayers()">
-      <div class="card-header">
-        <span class="name">{{ player.fullName }}</span>
-        <span class="age" *ngIf="player.age">{{ player.age }}y</span>
-      </div>
-
-      <div class="nickname" *ngIf="player.nickname">"{{ player.nickname }}"</div>
-
-      <div class="card-details">
-        <div class="detail-row">
-          <span class="label">Darts:</span>
-          <span class="value">{{ player.dartsUsed }}</span>
+    @for (player of result().items; track player.id) {
+      <div class="player-card">
+        <div class="card-header">
+          <span class="name">{{ player.fullName }}</span>
+          @if (player.age) {<span class="age">{{ player.age }}y</span>}
         </div>
-        <div class="detail-row">
-          <span class="label">Song:</span>
-          <span class="value song">
-            <lucide-icon [img]="music2Icon" [size]="14" class="song-icon"></lucide-icon>
-            <span>{{ player.walkOnSong }}</span>
-          </span>
+
+        @if (player.nickname) {
+          <div class="nickname">"{{ player.nickname }}"</div>
+        }
+
+        <div class="card-details">
+          <div class="detail-row">
+            <span class="label">Darts:</span>
+            <span class="value">{{ player.dartsUsed }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Song:</span>
+            <span class="value song">
+              <lucide-icon [img]="music2Icon" [size]="14" class="song-icon"></lucide-icon>
+              <span>{{ player.walkOnSong }}</span>
+            </span>
+          </div>
         </div>
       </div>
+    }
+  </div>
+
+  @if (result().totalPages > 1) {
+    <div class="pagination">
+      <button class="page-btn" [disabled]="!result().hasPreviousPage" (click)="goToPage(page() - 1)">
+        &lsaquo; Prev
+      </button>
+      <span class="page-info">Page {{ result().page }} of {{ result().totalPages }}</span>
+      <button class="page-btn" [disabled]="!result().hasNextPage" (click)="goToPage(page() + 1)">
+        Next &rsaquo;
+      </button>
     </div>
-  </div>
+  }
 
-  <div class="no-data" *ngIf="filteredPlayers().length === 0">
-    No players found matching your search.
-  </div>
+  @if (isLoading() && result().items.length === 0) {
+    <div class="no-data">Loading players…</div>
+  }
+  @if (!isLoading() && hasLoadError()) {
+    <div class="no-data">Unable to load players.</div>
+  }
+  @if (!isLoading() && !hasLoadError() && result().items.length === 0) {
+    <div class="no-data">No players found matching your search.</div>
+  }
 </div>

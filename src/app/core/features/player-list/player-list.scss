@@ -22,25 +22,28 @@
   }
 }
 
+// ─── Search / filter bar ─────────────────────────────────────────────────────
+
 .search-container {
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto 2rem auto;
-  text-align: center;
 
   .filter-row {
     display: flex;
+    align-items: center;
     gap: 10px;
     margin-bottom: 0.5rem;
+    flex-wrap: wrap;
 
-    @include mixins.max-width(mixins.$tablet) {
-      flex-direction: column;
-      gap: 15px;
+    @include mixins.max-width(mixins.$mobile) {
+      gap: 8px;
     }
   }
 
   .search-input-wrap {
     position: relative;
-    flex: 2;
+    flex: 1 1 200px;
+    min-width: 0;
   }
 
   .search-icon {
@@ -54,8 +57,7 @@
 
   .search-input {
     width: 100%;
-    padding: 12px 20px;
-    padding-left: 2.75rem;
+    padding: 11px 20px 11px 2.75rem;
     font-size: 1rem;
     border: 2px solid var(--color-border);
     background-color: var(--color-bg-card);
@@ -63,47 +65,152 @@
     border-radius: 25px;
     outline: none;
     transition: border-color 0.3s;
+    box-sizing: border-box;
 
-    &::placeholder {
-      color: var(--color-text-muted);
-      opacity: 1;
-    }
-
-    &:focus {
-      border-color: var(--color-primary);
-    }
-
+    &::placeholder { color: var(--color-text-muted); opacity: 1; }
+    &:focus { border-color: var(--color-primary); }
   }
 
-  .brand-select {
-    flex: 1;
-    padding: 0 15px;
-    height: 46px;
-    font-size: 1rem;
+  .filter-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 16px;
+    height: 45px;
+    border: 2px solid var(--color-border);
+    border-radius: 25px;
+    background: var(--color-bg-card);
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color 0.2s, color 0.2s;
+    flex-shrink: 0;
+
+    &:hover,
+    &--active {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .filter-badge {
+      background: var(--color-primary);
+      color: #fff;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.7rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+  }
+
+  .page-size-select {
+    padding: 0 14px;
+    height: 45px;
+    font-size: 0.9rem;
     border: 2px solid var(--color-border);
     border-radius: 25px;
     background-color: var(--color-bg-card);
     color: var(--color-text-primary);
     cursor: pointer;
     outline: none;
+    flex-shrink: 0;
 
-    &:focus {
-      border-color: var(--color-primary);
-    }
-
-    option {
-      background-color: var(--color-bg-card);
-      color: var(--color-text-primary);
-    }
+    &:focus { border-color: var(--color-primary); }
+    option { background-color: var(--color-bg-card); color: var(--color-text-primary); }
   }
 
   .count {
     display: block;
     color: var(--color-text-muted);
     font-size: 0.9rem;
-    margin-top: 5px;
+    margin-top: 4px;
+    text-align: center;
   }
 }
+
+// ─── Filter panel ─────────────────────────────────────────────────────────────
+
+.filter-panel {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+
+  .filter-panel-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1 1 160px;
+    min-width: 0;
+  }
+
+  .filter-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-text-muted);
+  }
+
+  .filter-select {
+    padding: 9px 14px;
+    font-size: 0.95rem;
+    border: 2px solid var(--color-border);
+    border-radius: 10px;
+    background-color: var(--color-bg-card);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+
+    &:focus { border-color: var(--color-primary); }
+    option { background-color: var(--color-bg-card); color: var(--color-text-primary); }
+  }
+
+  .clear-filters-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 9px 16px;
+    border: 2px solid var(--color-border);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+    align-self: flex-end;
+    transition: border-color 0.2s, color 0.2s;
+
+    &:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+  }
+
+  @include mixins.max-width(mixins.$mobile) {
+    padding: 0.75rem;
+
+    .filter-panel-row { gap: 0.75rem; }
+    .filter-group { flex: 1 1 100%; }
+    .clear-filters-btn { width: 100%; justify-content: center; }
+  }
+}
+
+// ─── Table / cards ────────────────────────────────────────────────────────────
 
 .mobile-view { display: none; }
 .desktop-view { display: block; }
@@ -111,7 +218,6 @@
 @include mixins.max-width(mixins.$tablet) {
   .desktop-view { display: none; }
   .mobile-view { display: grid; gap: 15px; }
-
   .container { padding: 1rem; }
 }
 
@@ -176,10 +282,7 @@
       gap: 0.45rem;
     }
 
-    .song-icon {
-      color: var(--color-primary);
-      flex: 0 0 auto;
-    }
+    .song-icon { color: var(--color-primary); flex: 0 0 auto; }
   }
 }
 
@@ -189,7 +292,6 @@
   padding: 16px;
   box-shadow: 0 2px 8px var(--color-shadow-soft);
   border-left: 6px solid var(--color-primary);
-  position: relative;
 
   .card-header {
     display: flex;
@@ -197,12 +299,7 @@
     align-items: center;
     margin-bottom: 4px;
 
-    .name {
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: var(--color-text-primary);
-    }
-
+    .name { font-size: 1.2rem; font-weight: bold; color: var(--color-text-primary); }
     .age {
       background: var(--color-bg-soft);
       color: var(--color-text-tertiary);
@@ -246,20 +343,51 @@
         color: var(--color-text-secondary);
         text-align: right;
 
-        &.song {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.45rem;
-        }
-      }
-
-      .song {
-        color: var(--color-primary);
-        font-size: 0.9rem;
+        &.song { display: inline-flex; align-items: center; gap: 0.45rem; }
       }
     }
   }
 }
+
+// ─── Sortable headers ─────────────────────────────────────────────────────────
+
+.sortable {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+
+  &:hover { opacity: 0.85; }
+
+  .sort-arrow { margin-left: 0.3rem; font-size: 0.75rem; }
+}
+
+// ─── Pagination ───────────────────────────────────────────────────────────────
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+
+  .page-btn {
+    padding: 0.5rem 1.25rem;
+    border: 2px solid var(--color-border);
+    border-radius: 20px;
+    background: var(--color-bg-card);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: border-color 0.2s, color 0.2s;
+
+    &:hover:not([disabled]) { border-color: var(--color-primary); color: var(--color-primary); }
+    &[disabled] { opacity: 0.4; cursor: not-allowed; }
+  }
+
+  .page-info { color: var(--color-text-muted); font-size: 0.9rem; }
+}
+
+// ─── Empty / error states ─────────────────────────────────────────────────────
 
 .no-data {
   text-align: center;
