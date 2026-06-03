@@ -5,4 +5,6 @@ export interface PlayerProfile {
   age?: number;
   dartsUsed: string;
   walkOnSong: string;
+  dartBrand?: string;
+  dartWeight?: string;
 }

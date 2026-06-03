@@ -5,89 +5,137 @@
   </h1>
 
   <div class="search-container">
+
+    <!-- Row 1: search + page size -->
     <div class="filter-row">
       <div class="search-input-wrap">
         <lucide-icon [img]="searchIcon" [size]="18" class="search-icon"></lucide-icon>
         <input
           type="text"
           class="search-input"
-          placeholder="Search rankings..."
+          placeholder="Search players..."
           [ngModel]="searchTerm()"
-          (ngModelChange)="searchTerm.set($event)"
+          (ngModelChange)="onSearch($event)"
         />
       </div>
 
       <select
         class="brand-select"
-        [ngModel]="selectedSourceUrl()"
-        (ngModelChange)="selectedSourceUrl.set($event)"
+        [ngModel]="pageSize()"
+        (ngModelChange)="onPageSizeChange(+$event)"
       >
-        <option value="">All Sources</option>
-        <option *ngFor="let sourceUrl of sourceUrls()" [value]="sourceUrl">
-          {{ sourceUrl }}
-        </option>
+        <option [value]="10">10 / page</option>
+        <option [value]="20">20 / page</option>
+        <option [value]="50">50 / page</option>
       </select>
     </div>
 
-    <span class="count">{{ filteredRankings().length }} rankings found</span>
+    <!-- Row 2: rank range -->
+    <div class="filter-row filter-row--rank">
+      <input
+        type="number"
+        class="rank-input"
+        placeholder="Min rank"
+        [ngModel]="minRank()"
+        (ngModelChange)="onMinRankChange($event)"
+        min="1"
+      />
+      <span class="rank-sep">–</span>
+      <input
+        type="number"
+        class="rank-input"
+        placeholder="Max rank"
+        [ngModel]="maxRank()"
+        (ngModelChange)="onMaxRankChange($event)"
+        min="1"
+      />
+    </div>
+
+    <span class="count">
+      {{ result().totalCount }} rankings
+      @if (isLoading()) {<span> — loading...</span>}
+    </span>
   </div>
 
   <div class="desktop-view table-responsive">
     <table class="data-table">
       <thead>
         <tr>
-          <th>Rank</th>
-          <th>Player</th>
-          <th>Prize Money</th>
+          <th class="sortable" (click)="sort('rank')">
+            Rank
+            <span class="sort-arrow">{{ sortBy() === 'rank' ? (sortDescending() ? '▼' : '▲') : '' }}</span>
+          </th>
+          <th class="sortable" (click)="sort('playerName')">
+            Player
+            <span class="sort-arrow">{{ sortBy() === 'playerName' ? (sortDescending() ? '▼' : '▲') : '' }}</span>
+          </th>
+          <th class="sortable" (click)="sort('moneyAmount')">
+            Prize Money
+            <span class="sort-arrow">{{ sortBy() === 'moneyAmount' ? (sortDescending() ? '▼' : '▲') : '' }}</span>
+          </th>
           <th>Updated</th>
           <th>Source</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let ranking of filteredRankings()">
-          <td class="name-col">#{{ ranking.rank }}</td>
-          <td>{{ ranking.playerName }}</td>
-          <td>{{ ranking.moneyAmount | currency:'GBP':'symbol':'1.0-0' }}</td>
-          <td>{{ ranking.scrapedAtUtc | date:'mediumDate' }}</td>
-          <td class="highlight-col">
-            <a [href]="ranking.sourceUrl" target="_blank" rel="noopener noreferrer">Source</a>
-          </td>
-        </tr>
+        @for (ranking of result().items; track ranking.id) {
+          <tr>
+            <td class="name-col">#{{ ranking.rank }}</td>
+            <td>{{ ranking.playerName }}</td>
+            <td>{{ ranking.moneyAmount | currency:'GBP':'symbol':'1.0-0' }}</td>
+            <td>{{ ranking.scrapedAtUtc | date:'mediumDate' }}</td>
+            <td class="highlight-col">
+              <a [href]="ranking.sourceUrl" target="_blank" rel="noopener noreferrer">Source</a>
+            </td>
+          </tr>
+        }
       </tbody>
     </table>
   </div>
 
   <div class="mobile-view">
-    <div class="data-card" *ngFor="let ranking of filteredRankings()">
-      <div class="card-header">
-        <span class="name">#{{ ranking.rank }} {{ ranking.playerName }}</span>
-        <span class="badge">{{ ranking.moneyAmount | currency:'GBP':'symbol':'1.0-0' }}</span>
-      </div>
+    @for (ranking of result().items; track ranking.id) {
+      <div class="data-card">
+        <div class="card-header">
+          <span class="name">#{{ ranking.rank }} {{ ranking.playerName }}</span>
+          <span class="badge">{{ ranking.moneyAmount | currency:'GBP':'symbol':'1.0-0' }}</span>
+        </div>
 
-      <div class="card-details">
-        <div class="detail-row">
-          <span class="label">Updated:</span>
-          <span class="value">{{ ranking.scrapedAtUtc | date:'mediumDate' }}</span>
-        </div>
-        <div class="detail-row">
-          <span class="label">Source:</span>
-          <span class="value">
-            <a [href]="ranking.sourceUrl" target="_blank" rel="noopener noreferrer">Open</a>
-          </span>
+        <div class="card-details">
+          <div class="detail-row">
+            <span class="label">Updated:</span>
+            <span class="value">{{ ranking.scrapedAtUtc | date:'mediumDate' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Source:</span>
+            <span class="value">
+              <a [href]="ranking.sourceUrl" target="_blank" rel="noopener noreferrer">Open</a>
+            </span>
+          </div>
         </div>
       </div>
+    }
+  </div>
+
+  @if (result().totalPages > 1) {
+    <div class="pagination">
+      <button class="page-btn" [disabled]="!result().hasPreviousPage" (click)="goToPage(page() - 1)">
+        &lsaquo; Prev
+      </button>
+      <span class="page-info">Page {{ result().page }} of {{ result().totalPages }}</span>
+      <button class="page-btn" [disabled]="!result().hasNextPage" (click)="goToPage(page() + 1)">
+        Next &rsaquo;
+      </button>
     </div>
-  </div>
+  }
 
-  <div class="no-data" *ngIf="isLoading()">
-    Loading rankings...
-  </div>
-
-  <div class="no-data" *ngIf="!isLoading() && hasLoadError()">
-    Unable to load rankings.
-  </div>
-
-  <div class="no-data" *ngIf="!isLoading() && !hasLoadError() && filteredRankings().length === 0">
-    No rankings found matching your search.
-  </div>
+  @if (isLoading() && result().items.length === 0) {
+    <div class="no-data">Loading rankings...</div>
+  }
+  @if (!isLoading() && hasLoadError()) {
+    <div class="no-data">Unable to load rankings.</div>
+  }
+  @if (!isLoading() && !hasLoadError() && result().items.length === 0) {
+    <div class="no-data">No rankings found matching your filters.</div>
+  }
 </div>
