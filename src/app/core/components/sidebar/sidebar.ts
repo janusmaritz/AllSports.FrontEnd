@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, HostBinding } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, HostBinding, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import {
@@ -11,9 +11,12 @@ import {
   ChevronDown as ChevronDownIcon,
   ChevronRight as ChevronRightIcon,
   MoonStar as MoonStarIcon,
-  SunMedium as SunMediumIcon
+  SunMedium as SunMediumIcon,
+  LogOut as LogOutIcon,
+  User as UserIcon,
 } from 'lucide-angular';
 import { MenuItem } from '../../models/menu-item.model';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -31,12 +34,16 @@ export class SidebarComponent implements OnInit {
   @HostBinding('class.is-open') @Input() isOpen = false;
   @Output() closeRequested = new EventEmitter<void>();
 
+  protected readonly auth = inject(AuthService);
+
   private readonly themeStorageKey = 'allSportsTheme';
   isDarkMode = false;
   readonly chevronDownIcon = ChevronDownIcon;
   readonly chevronRightIcon = ChevronRightIcon;
   readonly moonStarIcon = MoonStarIcon;
   readonly sunMediumIcon = SunMediumIcon;
+  readonly logOutIcon = LogOutIcon;
+  readonly userIcon = UserIcon;
 
   menuItems: MenuItem[] = [
     {
