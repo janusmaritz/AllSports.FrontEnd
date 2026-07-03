@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { DartsRanking } from '../models/darts-ranking.model';
+import { DartsTournament } from '../models/darts-tournament.model';
 import { PagedResult } from '../models/paged-result.model';
 import { PlayerProfile } from '../models/player-profile.model';
 
@@ -26,6 +27,16 @@ export interface RankingQuery {
   sortDescending?: boolean;
 }
 
+export interface TournamentQuery {
+  searchTerm?: string;
+  organisation?: string;
+  status?: string;
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortDescending?: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class DartsService {
   readonly #http = inject(HttpClient);
@@ -39,6 +50,12 @@ export class DartsService {
 
   getRankings(query: RankingQuery = {}): Observable<PagedResult<DartsRanking>> {
     return this.#http.get<PagedResult<DartsRanking>>(`${this.#apiUrl}/rankings`, {
+      params: this.#toParams(query),
+    });
+  }
+
+  getTournaments(query: TournamentQuery = {}): Observable<PagedResult<DartsTournament>> {
+    return this.#http.get<PagedResult<DartsTournament>>(`${this.#apiUrl}/tournaments`, {
       params: this.#toParams(query),
     });
   }
