@@ -28,6 +28,20 @@
   </ul>
 </nav>
 
+<div class="user-section">
+  <lucide-icon [img]="userIcon" [size]="15" class="user-icon"></lucide-icon>
+  <span class="user-email" [title]="auth.currentUserEmail() ?? ''">{{ auth.currentUserEmail() }}</span>
+  <button
+    type="button"
+    class="logout-btn"
+    (click)="auth.logout()"
+    aria-label="Sign out"
+    title="Sign out"
+  >
+    <lucide-icon [img]="logOutIcon" [size]="15"></lucide-icon>
+  </button>
+</div>
+
 <div class="theme-toggle-wrap">
   <button
     type="button"

@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from './core/components/sidebar/sidebar';
+import { AuthService } from './core/services/auth.service';
 import { LucideAngularModule, Menu } from 'lucide-angular';
 
 @Component({
@@ -10,7 +11,7 @@ import { LucideAngularModule, Menu } from 'lucide-angular';
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('AllSportsUI');
+  protected readonly auth = inject(AuthService);
   readonly menuIcon = Menu;
   isSidebarOpen = signal(false);
 
