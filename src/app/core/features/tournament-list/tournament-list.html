@@ -5,6 +5,8 @@
   </h1>
 
   <div class="search-container">
+
+    <!-- Row 1: search + page size -->
     <div class="filter-row">
       <div class="search-input-wrap">
         <lucide-icon [img]="searchIcon" [size]="18" class="search-icon"></lucide-icon>
@@ -13,73 +15,152 @@
           class="search-input"
           placeholder="Search tournaments..."
           [ngModel]="searchTerm()"
-          (ngModelChange)="searchTerm.set($event)"
+          (ngModelChange)="onSearch($event)"
         />
       </div>
 
       <select
         class="brand-select"
-        [ngModel]="selectedStatus()"
-        (ngModelChange)="selectedStatus.set($event)"
+        [ngModel]="pageSize()"
+        (ngModelChange)="onPageSizeChange(+$event)"
       >
-        <option value="">All Statuses</option>
-        <option *ngFor="let status of statuses" [value]="status">
-          {{ status }}
-        </option>
+        <option [value]="10">10 / page</option>
+        <option [value]="20">20 / page</option>
+        <option [value]="50">50 / page</option>
       </select>
     </div>
 
-    <span class="count">{{ filteredTournaments().length }} tournaments found</span>
+    <!-- Row 2: status + organisation -->
+    <div class="filter-row">
+      <select
+        class="brand-select"
+        [ngModel]="selectedStatus()"
+        (ngModelChange)="onStatusChange($event)"
+      >
+        <option value="">All Statuses</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ status }}</option>
+        }
+      </select>
+
+      <select
+        class="brand-select"
+        [ngModel]="selectedOrganisation()"
+        (ngModelChange)="onOrganisationChange($event)"
+      >
+        <option value="">All Organisations</option>
+        @for (organisation of organisations; track organisation) {
+          <option [value]="organisation">{{ organisation }}</option>
+        }
+      </select>
+    </div>
+
+    <span class="count">
+      {{ result().totalCount }} tournaments
+      @if (isLoading()) {<span> — loading...</span>}
+    </span>
   </div>
 
   <div class="desktop-view table-responsive">
     <table class="data-table">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Location</th>
-          <th>Format</th>
+          <th class="sortable" (click)="sort('name')">
+            Name
+            <span class="sort-arrow">{{ sortBy() === 'name' ? (sortDescending() ? '▼' : '▲') : '' }}</span>
+          </th>
+          <th class="sortable" (click)="sort('startDate')">
+            Date
+            <span class="sort-arrow">{{ sortBy() === 'startDate' ? (sortDescending() ? '▼' : '▲') : '' }}</span>
+          </th>
+          <th class="sortable" (click)="sort('location')">
+            Location
+            <span class="sort-arrow">{{ sortBy() === 'location' ? (sortDescending() ? '▼' : '▲') : '' }}</span>
+          </th>
+          <th class="sortable" (click)="sort('organisation')">
+            Organisation
+            <span class="sort-arrow">{{ sortBy() === 'organisation' ? (sortDescending() ? '▼' : '▲') : '' }}</span>
+          </th>
           <th>Status</th>
-          <th>Champion</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let tournament of filteredTournaments()">
-          <td class="name-col">{{ tournament.name }}</td>
-          <td>{{ tournament.location }}</td>
-          <td>{{ tournament.format }}</td>
-          <td class="highlight-col">{{ tournament.status }}</td>
-          <td>{{ tournament.champion }}</td>
-        </tr>
+        @for (tournament of result().items; track tournament.id) {
+          <tr>
+            <td class="name-col">
+              <a [href]="tournament.detailUrl" target="_blank" rel="noopener noreferrer">{{ tournament.name }}</a>
+            </td>
+            <td>
+              {{ tournament.startDate | date:'d MMM y' }}
+              @if (tournament.endDate !== tournament.startDate) {
+                <span> – {{ tournament.endDate | date:'d MMM y' }}</span>
+              }
+            </td>
+            <td>{{ tournament.location || '—' }}</td>
+            <td>{{ tournament.organisation || '—' }}</td>
+            <td class="highlight-col">{{ statusOf(tournament) }}</td>
+          </tr>
+        }
       </tbody>
     </table>
   </div>
 
   <div class="mobile-view">
-    <div class="data-card" *ngFor="let tournament of filteredTournaments()">
-      <div class="card-header">
-        <span class="name">{{ tournament.name }}</span>
-        <span class="badge">{{ tournament.status }}</span>
-      </div>
+    @for (tournament of result().items; track tournament.id) {
+      <div class="data-card">
+        <div class="card-header">
+          <span class="name">{{ tournament.name }}</span>
+          <span class="badge">{{ statusOf(tournament) }}</span>
+        </div>
 
-      <div class="card-details">
-        <div class="detail-row">
-          <span class="label">Location:</span>
-          <span class="value">{{ tournament.location }}</span>
-        </div>
-        <div class="detail-row">
-          <span class="label">Format:</span>
-          <span class="value">{{ tournament.format }}</span>
-        </div>
-        <div class="detail-row">
-          <span class="label">Champion:</span>
-          <span class="value">{{ tournament.champion }}</span>
+        <div class="card-details">
+          <div class="detail-row">
+            <span class="label">Date:</span>
+            <span class="value">
+              {{ tournament.startDate | date:'d MMM y' }}
+              @if (tournament.endDate !== tournament.startDate) {
+                <span> – {{ tournament.endDate | date:'d MMM y' }}</span>
+              }
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Location:</span>
+            <span class="value">{{ tournament.location || '—' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Organisation:</span>
+            <span class="value">{{ tournament.organisation || '—' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Details:</span>
+            <span class="value">
+              <a [href]="tournament.detailUrl" target="_blank" rel="noopener noreferrer">Open</a>
+            </span>
+          </div>
         </div>
       </div>
+    }
+  </div>
+
+  @if (result().totalPages > 1) {
+    <div class="pagination">
+      <button class="page-btn" [disabled]="!result().hasPreviousPage" (click)="goToPage(page() - 1)">
+        &lsaquo; Prev
+      </button>
+      <span class="page-info">Page {{ result().page }} of {{ result().totalPages }}</span>
+      <button class="page-btn" [disabled]="!result().hasNextPage" (click)="goToPage(page() + 1)">
+        Next &rsaquo;
+      </button>
     </div>
-  </div>
+  }
 
-  <div class="no-data" *ngIf="filteredTournaments().length === 0">
-    No tournaments found matching your search.
-  </div>
+  @if (isLoading() && result().items.length === 0) {
+    <div class="no-data">Loading tournaments...</div>
+  }
+  @if (!isLoading() && hasLoadError()) {
+    <div class="no-data">Unable to load tournaments.</div>
+  }
+  @if (!isLoading() && !hasLoadError() && result().items.length === 0) {
+    <div class="no-data">No tournaments found matching your filters.</div>
+  }
 </div>
