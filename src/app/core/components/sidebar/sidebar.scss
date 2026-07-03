@@ -179,6 +179,51 @@ nav {
   }
 }
 
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--color-sidebar-border);
+
+  .user-icon {
+    flex: 0 0 auto;
+    color: var(--color-sidebar-text-muted);
+    display: flex;
+    align-items: center;
+  }
+
+  .user-email {
+    flex: 1;
+    font-size: 0.78rem;
+    color: var(--color-sidebar-text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .logout-btn {
+    flex: 0 0 auto;
+    background: none;
+    border: none;
+    color: var(--color-sidebar-text-muted);
+    cursor: pointer;
+    padding: 0.3rem;
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    transition: color 0.2s;
+
+    &:hover {
+      color: var(--color-sidebar-text);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-accent);
+    }
+  }
+}
+
 .theme-toggle-wrap {
   padding: 1rem 1rem 1.2rem;
   border-top: 1px solid var(--color-sidebar-border);
