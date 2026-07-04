@@ -5,8 +5,60 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-bg-primary);
   padding: 1rem;
+  position: relative;
+  overflow: hidden;
+  background: var(--color-primary-gradient);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(42rem circle at 18% 22%, color-mix(in srgb, var(--color-accent) 12%, transparent), transparent 60%),
+      radial-gradient(48rem circle at 82% 78%, color-mix(in srgb, var(--color-primary-light) 10%, transparent), transparent 65%);
+    pointer-events: none;
+  }
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.3;
+  pointer-events: none;
+  animation: orb-float 16s ease-in-out infinite;
+}
+
+.orb--1 {
+  width: 22rem;
+  height: 22rem;
+  background: var(--color-primary);
+  top: -6rem;
+  left: -7rem;
+}
+
+.orb--2 {
+  width: 18rem;
+  height: 18rem;
+  background: var(--color-accent);
+  bottom: -5rem;
+  right: -6rem;
+  animation-delay: -6s;
+}
+
+.orb--3 {
+  width: 12rem;
+  height: 12rem;
+  background: var(--color-primary-light);
+  top: 55%;
+  left: 12%;
+  animation-delay: -11s;
+}
+
+@keyframes orb-float {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(2.5rem, -3rem, 0) scale(1.12); }
 }
 
 .login-card {
@@ -15,7 +67,31 @@
   border-radius: 12px;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 4px 24px var(--color-shadow-soft);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+  position: relative;
+  animation: card-in 0.5s ease-out both;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 12px 12px 0 0;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(1rem) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .card-header {
@@ -27,8 +103,11 @@
     margin: 0 0 0.5rem;
     font-size: 1.75rem;
     font-weight: 700;
-    color: var(--color-primary);
     letter-spacing: 1px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 
   .subtitle {
@@ -52,6 +131,31 @@
   border-radius: 6px;
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
+  animation: shake 0.35s ease-in-out;
+}
+
+.info-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  color: var(--color-primary);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 45%, transparent);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  animation: card-in 0.35s ease-out both;
+
+  .info-icon {
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-0.3rem); }
+  75% { transform: translateX(0.3rem); }
 }
 
 .field {
@@ -189,5 +293,27 @@
       outline-offset: 2px;
       border-radius: 2px;
     }
+  }
+}
+
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--color-on-primary) 35%, transparent);
+  border-top-color: var(--color-on-primary);
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orb,
+  .login-card,
+  .error-banner,
+  .info-banner {
+    animation: none;
   }
 }

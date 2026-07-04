@@ -13,7 +13,7 @@ export class AuthService {
   readonly #apiUrl = `${environment.apiUrl}/auth`;
   readonly #tokenKey = 'allSportsToken';
 
-  readonly #token = signal<string | null>(this.#readStoredToken());
+  readonly #token = signal<string | null>(this.#initialToken());
 
   readonly isAuthenticated = computed(() => !!this.#token());
 
@@ -35,9 +35,12 @@ export class AuthService {
   }
 
   register(email: string, password: string): Observable<AuthResult> {
-    return this.#http
-      .post<AuthResult>(`${this.#apiUrl}/register`, { email, password })
-      .pipe(tap(r => this.#storeToken(r.token)));
+    return this.#http.post<AuthResult>(`${this.#apiUrl}/register`, { email, password }).pipe(
+      tap(r => {
+        // No token when Supabase still needs the email confirmed.
+        if (r.token) this.#storeToken(r.token);
+      }),
+    );
   }
 
   logout(): void {
@@ -53,6 +56,29 @@ export class AuthService {
   #storeToken(token: string): void {
     this.#token.set(token);
     localStorage.setItem(this.#tokenKey, token);
+  }
+
+  #initialToken(): string | null {
+    return this.#consumeConfirmationToken() ?? this.#readStoredToken();
+  }
+
+  /**
+   * Supabase email-confirmation links redirect back with the session in the
+   * URL fragment (#access_token=…&type=signup). Consume it so clicking the
+   * link signs the user straight in instead of dropping them on the login page.
+   */
+  #consumeConfirmationToken(): string | null {
+    if (typeof window === 'undefined') return null;
+
+    const hash = window.location.hash;
+    if (!hash.includes('access_token=')) return null;
+
+    const token = new URLSearchParams(hash.slice(1)).get('access_token');
+    if (!token) return null;
+
+    localStorage.setItem(this.#tokenKey, token);
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+    return token;
   }
 
   #readStoredToken(): string | null {
