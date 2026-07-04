@@ -3,4 +3,5 @@ export interface AuthResult {
   expiresAt: string;
   email: string;
   role: string;
+  requiresEmailConfirmation?: boolean;
 }
