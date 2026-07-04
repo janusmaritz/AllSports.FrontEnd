@@ -1,4 +1,8 @@
 <div class="login-page">
+  <div class="orb orb--1" aria-hidden="true"></div>
+  <div class="orb orb--2" aria-hidden="true"></div>
+  <div class="orb orb--3" aria-hidden="true"></div>
+
   <div class="login-card">
 
     <div class="card-header">
@@ -9,6 +13,12 @@
     <div class="card-body">
       @if (error()) {
         <div class="error-banner" role="alert">{{ error() }}</div>
+      }
+      @if (info()) {
+        <div class="info-banner" role="status">
+          <lucide-icon [img]="mailCheckIcon" [size]="18" class="info-icon"></lucide-icon>
+          <span>{{ info() }}</span>
+        </div>
       }
 
       <div class="field">
@@ -57,7 +67,11 @@
         [disabled]="loading()"
         (click)="submit()"
       >
-        <lucide-icon [img]="isLogin() ? loginIcon : userPlusIcon" [size]="16"></lucide-icon>
+        @if (loading()) {
+          <span class="spinner" aria-hidden="true"></span>
+        } @else {
+          <lucide-icon [img]="isLogin() ? loginIcon : userPlusIcon" [size]="16"></lucide-icon>
+        }
         {{ loading() ? 'Please wait…' : (isLogin() ? 'Sign in' : 'Create account') }}
       </button>
     </div>
